@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DIRECT_URL")
+}
+
+enum user_type {
+  ADMIN
+  EMPLOYEE
+  CUSTOMER
+}
+
+model user {
+  id       String @id @unique @default(cuid())
+  email    String @unique
+  username String @unique
+  password String
+
+  name String[]
+
+  type     user_type
+  invoices invoice[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model invoice {
+  id        String   @id @unique @default(cuid())
+  user      user     @relation(fields: [userId], references: [id])
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  products InvoiceAndProducts[]
+}
+
+model InvoiceAndProducts {
+  id        String  @id @unique @default(cuid())
+  product   product @relation(fields: [productId], references: [id])
+  productId String
+  invoice   invoice @relation(fields: [invoiceId], references: [id])
+  invoiceId String
+
+  features product_feature_invoice[]
+
+  count    Int     @default(1)
+  refunded Boolean @default(false)
+
+  @@unique([productId, invoiceId])
+}
+
+model category {
+  id       String    @id @unique @default(cuid())
+  name     String    @unique
+  products product[]
+}
+
+model product {
+  id        String   @id @unique @default(cuid())
+  title     String   @unique
+  content   String?
+  sku       String?
+  images    String[]
+  limit     Int?
+  published Boolean  @default(false)
+  pos       Boolean  @default(false)
+  deleted   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices InvoiceAndProducts[]
+
+  product_features product_features[]
+  category         category?          @relation(fields: [categoryId], references: [id])
+  categoryId       String?
+}
+
+enum product_feature_type {
+  CHECKBOX
+  OPTION
+  TEXT
+}
+
+model product_features {
+  id   String @id @unique @default(cuid())
+  name String
+
+  type product_feature_type
+
+  option String[]
+
+  index                   Int
+  price_add               Int?                      @default(0)
+  price_add_options       Int[]
+  required                Boolean                   @default(false)
+  product                 product                   @relation(fields: [productId], references: [id])
+  productId               String
+  product_feature_invoice product_feature_invoice[]
+
+  @@unique([index, productId])
+}
+
+model product_feature_invoice {
+  id      String   @id @unique @default(cuid())
+  //check box
+  checked Boolean? @default(false)
+
+  //text
+  typed String?
+
+  //option
+  option_index Int?
+
+  feature            product_features @relation(fields: [product_featuresId], references: [id])
+  product_featuresId String
+
+  InvoiceAndProducts   InvoiceAndProducts? @relation(fields: [invoiceAndProductsId], references: [id])
+  invoiceAndProductsId String?
+}
