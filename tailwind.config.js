@@ -2,5 +2,5 @@
 export default {
 	important: true,
 	content: ['./src/**/*.{html,js,svelte,ts}'],
-	plugins: [require('@tailwindcss/line-clamp')]
+	plugins: [require('daisyui')]
 };

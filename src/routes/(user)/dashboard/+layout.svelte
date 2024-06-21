@@ -1,15 +1,15 @@
 <script>
 	import Sidebar from '$lib/Components/Sidebar.svelte';
-	import '../../../app.css';
+	import 'tailwindcss/tailwind.css';
 </script>
 
 <svelte:head>
 	<title>My Invoice | Dashboard</title>
 </svelte:head>
 
-<main class="container flex items-start flex-col md:flex-row gap-5">
-	<Sidebar />
-	<div class="mt-20 w-full">
+<Sidebar />
+<main>
+	<div class="flex flex-col items-center justify-center w-full mt-8">
 		<slot />
 	</div>
 </main>
