@@ -1,13 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { JWT_SECRET } from '$env/static/private';
+// import { JWT_SECRET } from '$env/static/private';
+const JWT_SECRET = '0x1badb0020xaa55';
 
 declare module 'jsonwebtoken' {
-	// do it when it is stable
-	// export interface UserJwtPayload extends jwt.JwtPayload {
-	// 	id: string;
-	// 	email: string;
-	// 	username: string;
-	// }
 	export interface NewUserJwtPayload extends jwt.JwtPayload {
 		email: string;
 	}

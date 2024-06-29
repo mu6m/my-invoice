@@ -2,9 +2,9 @@
 	let open = false;
 </script>
 
-<div class="drawer lg:drawer-open bg-slate-300">
+<div class="drawer bg-slate-300 z-10">
 	<input id="my-drawer-2" type="checkbox" class="drawer-toggle" bind:checked={open} />
-	<label for="my-drawer-2" class="btn btn-circle btn-ghost drawer-button lg:hidden m-3">
+	<label for="my-drawer-2" class="btn btn-circle btn-ghost drawer-button m-3">
 		<svg fill="currentColor" viewBox="0 0 20 20" class="w-6 h-6">
 			{#if !open}
 				<path
@@ -25,11 +25,11 @@
 		<label for="my-drawer-2" aria-label="close sidebar" class="drawer-overlay"></label>
 		<ul class="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
 			<li><a href="/dashboard/">Home</a></li>
-			<li><a href="/dashboard/product/category">category</a></li>
-			<li><a href="/dashboard/product/create">product</a></li>
-			<li><a href="/dashboard/invoice/create">invoice</a></li>
-			<li><a href="/dashboard/pos">open POS</a></li>
+			<li><a href="/dashboard/category">category</a></li>
+			<li><a href="/dashboard/product">product</a></li>
+			<li><a href="/dashboard/invoice">invoice</a></li>
 			<li><a href="/dashboard/docs">Documents</a></li>
+			<li><a href="/pos">open POS</a></li>
 		</ul>
 	</div>
 </div>

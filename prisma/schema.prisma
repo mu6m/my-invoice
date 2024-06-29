@@ -40,17 +40,17 @@ model invoice {
 
 model InvoiceAndProducts {
   id        String  @id @unique @default(cuid())
-  product   product @relation(fields: [productId], references: [id])
+  product   product @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   productId String
-  invoice   invoice @relation(fields: [invoiceId], references: [id])
+  invoice   invoice @relation(fields: [invoiceId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   invoiceId String
 
   features product_feature_invoice[]
+  count    Int                       @default(1)
+  refunded Boolean                   @default(false)
 
-  count    Int     @default(1)
-  refunded Boolean @default(false)
-
-  @@unique([productId, invoiceId])
+  // diff features for products
+  // @@unique([productId, invoiceId])
 }
 
 model category {
@@ -68,7 +68,6 @@ model product {
   limit     Int?
   published Boolean  @default(false)
   pos       Boolean  @default(false)
-  deleted   Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -97,7 +96,7 @@ model product_features {
   price_add               Int?                      @default(0)
   price_add_options       Int[]
   required                Boolean                   @default(false)
-  product                 product                   @relation(fields: [productId], references: [id])
+  product                 product                   @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   productId               String
   product_feature_invoice product_feature_invoice[]
 
@@ -113,11 +112,13 @@ model product_feature_invoice {
   typed String?
 
   //option
-  option_index Int?
+  option String?
 
-  feature            product_features @relation(fields: [product_featuresId], references: [id])
+  price Int
+
+  feature            product_features @relation(fields: [product_featuresId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   product_featuresId String
 
-  InvoiceAndProducts   InvoiceAndProducts? @relation(fields: [invoiceAndProductsId], references: [id])
-  invoiceAndProductsId String?
+  InvoiceAndProducts   InvoiceAndProducts @relation(fields: [invoiceAndProductsId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  invoiceAndProductsId String
 }

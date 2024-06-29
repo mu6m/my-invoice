@@ -22,16 +22,23 @@ enum feature_type {
 }
 export async function is_feature(body: any) {
 	const schema = z.array(
-		z.object({
-			name: z.string().min(1, { message: 'Name is required' }),
-			type: z.nativeEnum(feature_type),
+		z
+			.object({
+				name: z.string().min(1, { message: 'Name is required' }),
+				type: z.nativeEnum(feature_type),
 
-			required: z.boolean().optional(),
-			price_add: z.number().optional(),
-			price_add_options: z.array(z.number()).optional(),
+				required: z.boolean().optional(),
+				price_add: z.number().optional(),
+				price_add_options: z.array(z.number()).optional(),
 
-			option: z.array(z.string()).optional()
-		})
+				option: z.array(z.string()).optional()
+			})
+			.refine((data) => {
+				if (data.price_add_options?.length != data.option?.length) {
+					return false;
+				}
+				return true;
+			})
 	);
 
 	const parsed = schema.safeParse(body);

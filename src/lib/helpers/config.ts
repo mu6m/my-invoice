@@ -1,1 +1,3 @@
-//shift some env vars to this
+export const config = {
+	limited_admins: true
+};
