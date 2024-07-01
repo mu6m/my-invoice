@@ -20,7 +20,6 @@ export async function create(token: string, body: any) {
 
 		for (let i = 0; i < body.feature.length; i++) {
 			let feature = body.feature[i];
-			feature.index = i;
 			feature.productId = product.id;
 			await tx.product_features.create({ data: feature });
 		}

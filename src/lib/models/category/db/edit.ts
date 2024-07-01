@@ -12,7 +12,7 @@ async function validate(body: any) {
 	const parsed = schema.safeParse(body);
 	return parsed;
 }
-export async function edit(body: any, jwt_token: string) {
+export async function edit(jwt_token: string, body: any) {
 	if (!validate_type(jwt_token, [user_type.ADMIN, user_type.EMPLOYEE])) {
 		throw new Error('user does not have the previlage');
 	}

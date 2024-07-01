@@ -10,7 +10,7 @@ export async function is_invoice(body: any) {
 					z.object({
 						product_featuresId: z.string().min(1, { message: 'id is required' }),
 						checked: z.boolean().optional(),
-						typed: z.boolean().optional(),
+						typed: z.string().optional(),
 						option_index: z.number().optional()
 					})
 				)

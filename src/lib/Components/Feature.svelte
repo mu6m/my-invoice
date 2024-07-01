@@ -1,11 +1,14 @@
 <script>
 	export let i;
 	export let feature_arr;
-	feature_arr[i] = {
-		option: [],
-		price_add_options: []
-	};
-	let num_op = 0;
+
+	if (feature_arr.length == 0) {
+		feature_arr[i] = {
+			option: [],
+			price_add_options: []
+		};
+	}
+	let num_op = feature_arr[i].option.length;
 </script>
 
 <h2>feature {i} :</h2>

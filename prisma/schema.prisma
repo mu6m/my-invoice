@@ -66,6 +66,7 @@ model product {
   sku       String?
   images    String[]
   limit     Int?
+  price     Int?     @default(0)
   published Boolean  @default(false)
   pos       Boolean  @default(false)
   createdAt DateTime @default(now())
@@ -92,15 +93,12 @@ model product_features {
 
   option String[]
 
-  index                   Int
   price_add               Int?                      @default(0)
   price_add_options       Int[]
   required                Boolean                   @default(false)
   product                 product                   @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   productId               String
   product_feature_invoice product_feature_invoice[]
-
-  @@unique([index, productId])
 }
 
 model product_feature_invoice {

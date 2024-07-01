@@ -15,7 +15,7 @@ async function takeScreenshot() {
 	// This try/catch block handles the cases where the page fails to load but returns a valid HTTP status as well
 	// as the case where the goto() function throws an error (e.g. due to a timeout)
 	try {
-		const response = await page.goto('/dashboard/invoice');
+		const response = await page.goto('/dashboard/');
 		if (response && !response.ok) {
 			await browser.close();
 			console.warn(`Failed to load page: ${response.status()} ${response.statusText()}`);

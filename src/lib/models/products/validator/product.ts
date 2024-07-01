@@ -6,7 +6,7 @@ export async function is_product(body: any) {
 		content: z.string().optional(),
 		sku: z.string().optional(),
 		images: z.array(z.string()),
-		limit: z.number().optional(),
+		limit: z.number().nullable(),
 		categoryId: z.string().optional(),
 		published: z.boolean().optional(),
 		pos: z.boolean().optional()

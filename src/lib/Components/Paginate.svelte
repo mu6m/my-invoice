@@ -22,7 +22,7 @@
 		>
 	{/if}
 
-	{#if per_page < max_page}
+	{#if per_page < max_count}
 		<button class="join-item btn">{cur_page}</button>
 	{/if}
 

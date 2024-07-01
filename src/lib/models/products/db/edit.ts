@@ -10,7 +10,7 @@ export async function edit(product_id: string, token: string, body: any) {
 	const parsed_feature = await is_feature(body?.feature);
 
 	if (!parsed_product.success || !parsed_feature.success) {
-		throw new Error('your object has an error');
+		throw new Error(`your object has an error ${parsed_product.success} ${parsed_feature.success}`);
 	}
 
 	const product = await prisma.$transaction(async (tx) => {
@@ -27,7 +27,6 @@ export async function edit(product_id: string, token: string, body: any) {
 		});
 		for (let i = 0; i < body.feature.length; i++) {
 			let feature = body.feature[i];
-			feature.index = i;
 			feature.productId = product.id;
 			await tx.product_features.create({ data: feature });
 		}
