@@ -1,42 +1,39 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import Feature from '$lib/Components/Feature.svelte';
 	import axios from 'axios';
+	import Product from './Component/Product.svelte';
 
 	let loading = false;
 	let errors: string[] = [];
-	let images = 1;
-	let feature = 0;
-	let feature_arr: any[] = [];
-	let product_obj = {
-		title: undefined,
-		content: undefined,
-		sku: undefined,
-		images: [],
-		limit: undefined,
-		categoryId: undefined,
-		published: undefined,
-		pos: undefined
-	};
+	let inv: any[] = [];
+	// let inv: any[] = [
+	// 	{
+	// 		id: 'cly0ly2dg00018cwcu1ji2utl',
+	// 		count: 1,
+	// 		features: [
+	// 			{
+	// 				product_featuresId: 'cly0ly2p300038cwcky235smg',
+	// 				checked: true,
+	// 				typed: 'dsalkmdsalk',
+	// 				option_index: 1
+	// 			}
+	// 		]
+	// 	}
+	// ];
 
 	let alert: string = '';
 	async function submit_api() {
-		console.log({
-			product: product_obj,
-			feature: feature_arr
-		});
 		const { data, status } = await axios.post(
-			'/api/product/create',
+			'/api/invoice/create',
 			{
-				product: product_obj,
-				feature: feature_arr
+				products: inv
 			},
 			{
 				validateStatus: () => true
 			}
 		);
 		if (status === 200) {
-			alert = `product <b>${product_obj.title}</b> created successfully !`;
+			alert = `invoice created successfully !`;
 		} else {
 			alert = 'there is an error !';
 		}
@@ -66,149 +63,38 @@
 	</div>
 {/if}
 
-<form
-	class="bg-white shadow-md rounded px-3 w-full max-w-3xl pt-6 pb-8 mb-4"
-	on:submit|preventDefault={async () => {
-		loading = true;
-		errors = [];
-		await submit_api();
-		loading = false;
-	}}
->
+<form class="bg-white shadow-md rounded px-3 w-full max-w-3xl pt-6 pb-8 mb-4">
 	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="title">title</label>
+		<label class="block text-gray-700 text-sm font-bold mb-2" for="input">number of products</label>
 		<input
 			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="title"
-			name="title"
-			type="text"
-			placeholder="title"
-			bind:value={product_obj.title}
-		/>
-	</div>
-	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="content"
-			>content (optional)</label
-		>
-		<textarea
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="content"
-			name="content"
-			placeholder="content"
-			rows="10"
-			bind:value={product_obj.content}
-		/>
-	</div>
-	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="sku">sku (optional)</label>
-		<input
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="sku"
-			name="sku"
-			type="text"
-			placeholder="sku"
-			bind:value={product_obj.sku}
-		/>
-	</div>
-	<div class="mb-4">
-		<label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-			>Select a category</label
-		>
-		<select
-			id="type"
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			bind:value={product_obj.categoryId}
-		>
-			<option selected>Choose Category (optional)</option>
-			{#each $page.data.cats as cat}
-				<option value={cat.id}>{cat.name}</option>
-			{/each}
-		</select>
-	</div>
-	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="sku">number of images</label>
-		<input
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="numof"
-			name="numof"
 			type="number"
 			min="0"
-			bind:value={images}
+			bind:value={inv.length}
 		/>
 	</div>
-	<h2 class="font-bold my-5">images:</h2>
-	{#each { length: images } as _, i}
-		<div class="mb-4">
-			<label class="block text-gray-700 text-sm font-bold mb-2" for={`image-${i}`}>image {i}</label>
-			<input
-				class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-				id={`image-${i}`}
-				name={`image-${i}`}
-				type="text"
-				placeholder={`image ${i}`}
-				bind:value={product_obj.images[i]}
-			/>
-		</div>
+	<h2 class="font-bold my-5">products :</h2>
+	<button
+		on:click={() => {
+			console.log(inv);
+			console.log($page.data.pro);
+		}}>ksksk</button
+	>
+	{#each { length: inv.length } as _, i}
+		<Product {i} {inv} />
 	{/each}
 
-	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="sku"
-			>limit (leave empty to make it unlimited)</label
-		>
-		<input
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="limit"
-			name="limit"
-			type="number"
-			min="0"
-			placeholder="limit"
-			bind:value={product_obj.limit}
-		/>
-	</div>
-	<div class="mb-4">
-		<label class="block text-gray-700 text-sm font-bold mb-2" for="sku">number of features</label>
-		<input
-			class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-			id="numof"
-			name="numof"
-			type="number"
-			min="0"
-			bind:value={feature}
-		/>
-	</div>
-	<h2 class="font-bold my-5">product features:</h2>
-	{#each { length: feature } as _, i}
-		<Feature {i} {feature_arr} />
-	{/each}
-
-	<div class="flex items-center mb-4">
-		<input
-			id="published"
-			type="checkbox"
-			value=""
-			bind:checked={product_obj.published}
-			class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-		/>
-		<label for="published" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-			>is published</label
-		>
-	</div>
-	<div class="flex items-center mb-4">
-		<input
-			id="pos"
-			type="checkbox"
-			value=""
-			bind:checked={product_obj.pos}
-			class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-		/>
-		<label for="pos" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">is pos</label
-		>
-	</div>
 	<div class="flex items-center justify-between">
 		{#if !loading}
 			<button
 				class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
 				type="submit"
+				on:click={async () => {
+					loading = true;
+					errors = [];
+					await submit_api();
+					loading = false;
+				}}
 			>
 				Create
 			</button>

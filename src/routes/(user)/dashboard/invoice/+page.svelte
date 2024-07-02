@@ -20,7 +20,7 @@
 
 <div class="flex gap-3">
 	<div class="flex">
-		<input type="text" bind:value={search_t} placeholder="search by title" />
+		<input type="text" bind:value={search_t} placeholder="search by product name" />
 		<button
 			class="btn btn-primary"
 			on:click={() => {
@@ -32,7 +32,7 @@
 			}}>search</button
 		>
 	</div>
-	<a href="/dashboard/product/create" class="btn btn-success">Create New Product</a>
+	<a href="/dashboard/invoice/create" class="btn btn-success">Create New Invoice</a>
 </div>
 
 <div class="overflow-x-auto">
@@ -41,7 +41,6 @@
 			<tr>
 				<th></th>
 				<th>number of products</th>
-				<th>price</th>
 				<th>created At</th>
 				<th>updated At</th>
 				<th>actions</th>
@@ -49,21 +48,19 @@
 		</thead>
 		<tbody>
 			{#if $page.data.list.length == 0}
-				<h1>No Products</h1>
+				<h1>No Invoices</h1>
 			{/if}
 			{#each $page.data.list as product, index}
 				<tr>
 					<th>{index + 1}</th>
-					<td>{product.title}</td>
-					<td>{product.sku}</td>
-					<td>{product.limit || 'NO LIMIT'}</td>
-					<td>{product.pos}</td>
-					<td>{product.published}</td>
+					<td>{product.products.length}</td>
 					<td>{simple_date(product.createdAt)}</td>
 					<td>{simple_date(product.updatedAt)}</td>
-					<td>{product?.category?.name || 'NO CATEGORY'}</td>
 					<td>
-						<a href={`/dashboard/product/${product.id}`} class="btn btn-primary">Edit</a>
+						<form method="POST" action="?/edit" use:enhance>
+							<input value={product.id} type="text" name="id" hidden={true} />
+							<button class="btn btn-primary" type="submit">Refund</button>
+						</form>
 						<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 						<label
 							for="my_modal"

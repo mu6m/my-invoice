@@ -3,13 +3,13 @@ import prisma from '$lib/helpers/prisma';
 import { validate_type, user_type } from '$lib/helpers/validate_user';
 import { Prisma } from '@prisma/client';
 import { is_invoice } from '../validator/validate';
+import { v4 as uuidv4 } from 'uuid';
 
 export async function create(token: string, body: any) {
 	if (!validate_type(token, [user_type.ADMIN, user_type.CUSTOMER, user_type.EMPLOYEE])) {
 		throw new Error('user does not have the previlage');
 	}
 	const user = await verifyAccessToken(token);
-
 	const parsed = await is_invoice(body);
 	if (!parsed.success) {
 		throw new Error('your object has an error');
@@ -68,6 +68,7 @@ export async function create(token: string, body: any) {
 	//format the features
 	let inv_arr: any[] = [];
 	for (let item of body.products) {
+		let fet_arr: any[] = [];
 		for (let feat of item.features) {
 			let op_feat: any = undefined;
 			for (const pro_feat of db_pro[item.id].product_features) {
@@ -82,13 +83,21 @@ export async function create(token: string, body: any) {
 				feat.price = op_feat.price_add;
 			}
 			delete feat.option_index;
-			// delete feat.product_featuresId;
-			inv_arr.push({
-				product: item.id,
-				count: item.count,
-				features: item.features
+			fet_arr.push({
+				id: uuidv4(),
+				price: feat.price,
+				option: feat.option,
+				typed: feat.typed,
+				checked: feat.checked,
+				product_featuresId: feat.product_featuresId
 			});
 		}
+		inv_arr.push({
+			id: uuidv4(),
+			product: item.id,
+			count: item.count,
+			features: fet_arr
+		});
 	}
 	//read many
 	//update many
@@ -108,30 +117,28 @@ export async function create(token: string, body: any) {
 			}
 			//create invoice
 			console.log('long transaction');
+			const inv_id = uuidv4();
 
-			const invo = await tx.invoice.create({
-				data: {
-					user: {
-						connect: { id: user.id }
-					}
-				}
-			});
+			console.log(
+				`INSERT INTO "invoice" ("id", "userId", "createdAt", "updatedAt") VALUES ('${inv_id}', '${user.id}', now(), now())`
+			);
 
-			for (let pro_i of inv_arr) {
-				console.log(pro_i);
-				await tx.invoiceAndProducts.create({
-					data: {
-						invoiceId: invo.id,
-						productId: pro_i.product,
-						count: pro_i.count,
-						features: {
-							createMany: {
-								data: pro_i.features
-							}
-						}
-					}
+			await tx.$executeRawUnsafe(
+				`INSERT INTO "invoice" ("id", "userId", "createdAt", "updatedAt") VALUES ('${inv_id}', '${user.id}', now(), now())`
+			);
+			let values = inv_arr.map(
+				(item) => `('${item.id}', '${item.product}', '${inv_id}', '${item.count}', false)`
+			);
+			let query = `INSERT INTO "InvoiceAndProducts" ("id", "productId", "invoiceId", "count", "refunded") VALUES ${values.join(',')}`;
+			await tx.$executeRawUnsafe(query);
+			let feat_values = inv_arr.map((item) => {
+				return item.features.map((feat: any) => {
+					return `('${feat.id}', ${feat.checked}, '${feat.typed}', '${feat.option}', '${feat.price}', '${feat.product_featuresId}', '${item.id}')`;
 				});
-			}
+			});
+			console.log(feat_values);
+			let feat_query = `INSERT INTO "product_feature_invoice" ("id", "checked", "typed", "option", "price", "product_featuresId", "invoiceAndProductsId") VALUES ${feat_values.join(',')}`;
+			await tx.$executeRawUnsafe(feat_query);
 		},
 		{
 			maxWait: 100000,

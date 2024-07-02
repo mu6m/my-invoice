@@ -8,17 +8,18 @@ export async function load({ locals, params, url }: any) {
 	if (!page) {
 		page = 1;
 	}
-	// const all_sell = await prisma.$queryRaw``
+
 	const list = await prisma.invoice.findMany({
-		where: {
-			products: {
-				every: {
-					product: {
-						title: search_text
-					}
-				}
-			}
-		},
+		// TODO: implement better search
+		// where: {
+		// 	products: {
+		// 		every: {
+		// 			product: {
+		// 				title: search_text
+		// 			}
+		// 		}
+		// 	}
+		// },
 		skip: (page - 1) * per_page,
 		take: per_page,
 		include: {
@@ -48,13 +49,28 @@ export const actions = {
 	delete: async ({ request }) => {
 		const data = await request.formData();
 		const id = data.get('id') as string;
-		console.log(id);
 		if (!id) {
 			return fail(400);
 		}
 		const res = await prisma.invoice.delete({
 			where: {
 				id
+			}
+		});
+		return res;
+	},
+	edit: async ({ request }) => {
+		const data = await request.formData();
+		const id = data.get('id') as string;
+		if (!id) {
+			return fail(400);
+		}
+		const res = await prisma.invoiceAndProducts.updateMany({
+			where: {
+				invoiceId: id
+			},
+			data: {
+				refunded: true
 			}
 		});
 		return res;

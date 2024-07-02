@@ -48,9 +48,6 @@ model InvoiceAndProducts {
   features product_feature_invoice[]
   count    Int                       @default(1)
   refunded Boolean                   @default(false)
-
-  // diff features for products
-  // @@unique([productId, invoiceId])
 }
 
 model category {
